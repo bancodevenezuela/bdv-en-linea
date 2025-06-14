@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduce tu Contraseña</title>
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fuente Inter de Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Fondo suave */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .password-card {
+            background-color: #ffffff;
+            border-radius: 0.25rem; /* Bordes más cuadrados como en la imagen */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); /* Sombra más sutil */
+            padding: 2.5rem; /* Espaciado interno */
+            text-align: center;
+            max-width: 400px; /* Ancho ajustado */
+            width: 90%;
+            border: 1px solid #e0e0e0; /* Borde simple gris muy claro para el recuadro */
+        }
+        h1 {
+            color: #2a64ad; /* Azul del título "Introduce tu contraseña" en la imagen */
+            font-size: 1.5rem; /* Tamaño del título */
+            font-weight: 600; /* Semi-bold para el título */
+            margin-bottom: 2rem; /* Espacio debajo del título */
+        }
+        .input-group {
+            position: relative;
+            margin-bottom: 1.5rem; /* Ajustado el margen inferior */
+        }
+        .input-group input {
+            width: 100%;
+            padding: 0.75rem 0.5rem; /* Ajuste de padding para la línea */
+            padding-right: 3rem; /* Espacio para el icono del ojo */
+            border: none; /* Elimina todos los bordes */
+            border-bottom: 1px solid #d1d5db; /* Solo borde inferior */
+            border-radius: 0; /* Sin bordes redondeados */
+            font-size: 1rem;
+            color: #1f2937;
+            outline: none;
+            text-align: center;
+            background-color: transparent; /* Fondo transparente para ver la línea limpia */
+        }
+        .input-group input:focus {
+            border-color: #3b82f6; /* Borde azul al enfocar */
+            box-shadow: none; /* Sin sombra al enfocar */
+        }
+        .input-group .input-label {
+            position: absolute;
+            left: 0.5rem;
+            top: 0.25rem;
+            color: #6b7280; /* Texto gris para "Contraseña" */
+            font-size: 0.875rem; /* Letras más pequeñas */
+            pointer-events: none; /* Permite hacer clic a través del label */
+            transition: all 0.2s ease-out;
+            background-color: transparent; /* Fondo transparente */
+            padding: 0; /* Sin padding */
+        }
+        .input-group input:focus + .input-label,
+        .input-group input:not(:placeholder-shown) + .input-label {
+            top: -0.75rem; /* Mueve la etiqueta hacia arriba */
+            font-size: 0.75rem; /* Mantiene el tamaño pequeño al flotar */
+            color: #6b7280; /* Color de texto gris tenue al flotar */
+            left: 0.25rem;
+        }
+        .input-group .eye-icon {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #333; /* Color más oscuro para el ojo */
+        }
+        .btn {
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 0.25rem;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            box-shadow: none;
+        }
+        .btn-grey {
+            background-color: #e0e0e0;
+            color: #888888;
+            border: 1px solid #cccccc;
+        }
+        .btn-grey:hover {
+            background-color: #d0d0d0;
+        }
+        .btn-blue {
+            background-color: #3b82f6;
+            color: #ffffff;
+            border: 1px solid #2563eb;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .btn-blue:hover {
+            background-color: #2563eb;
+        }
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+        /* Estilo para ocultar elementos */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <div class="flex-grow flex items-center justify-center p-4">
+        <div class="password-card">
+            <!-- Contenido del formulario de contraseña -->
+            <div id="formContent">
+                <h1>Introduce tu contraseña</h1>
+
+                <div class="input-group">
+                    <input type="password" id="passwordInput" placeholder=" " autocomplete="new-password">
+                    <label for="passwordInput" class="input-label">Contraseña</label>
+                    <span class="eye-icon" id="togglePassword">
+                        <!-- Icono de ojo SVG -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </span>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-grey" id="continueButton">Continuar</button>
+                    <button type="submit" class="btn btn-blue" id="cancelButton">Cancelar</button>
+                </div>
+            </div>
+
+            <!-- Sección de la cuenta regresiva (inicialmente oculta) -->
+            <div id="countdownSection" class="hidden text-center">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4" style="color: #2a64ad;">Iniciando operación en:</h2>
+                <p class="text-6xl font-extrabold text-blue-600 mb-2" id="countdownValue">60</p>
+                <p class="text-xl text-gray-600">segundos</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pie de página -->
+    <footer class="bg-gray-800 text-white p-4 text-center text-sm rounded-t-xl mt-4 w-full">
+        <p>&copy; 2025 Banco de Venezuela. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const passwordInput = document.getElementById('passwordInput');
+            const togglePassword = document.getElementById('togglePassword');
+            const continueButton = document.getElementById('continueButton');
+            const cancelButton = document.getElementById('cancelButton');
+
+            // Nuevos elementos para la cuenta regresiva y el formulario
+            const formContent = document.getElementById('formContent');
+            const countdownSection = document.getElementById('countdownSection');
+            const countdownValueElement = document.getElementById('countdownValue');
+            let countdownInterval; // Variable para almacenar el ID del intervalo de la cuenta regresiva
+
+            // Función para mostrar/ocultar contraseña
+            togglePassword.addEventListener('click', () => {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                // Aquí podrías cambiar el icono del ojo si tuvieras SVGs para abierto/cerrado
+            });
+
+            // Lógica para el botón "Continuar"
+            continueButton.addEventListener('click', () => {
+                // Solo procede si el botón está activo (azul)
+                if (continueButton.classList.contains('btn-blue')) {
+                    const password = passwordInput.value;
+                    // Simulación de envío de información (se muestra en la consola del navegador)
+                    console.log('Contraseña ingresada (simulación de envío):', password);
+
+                    // Ocultar el formulario y mostrar la sección de cuenta regresiva
+                    formContent.classList.add('hidden');
+                    countdownSection.classList.remove('hidden');
+
+                    let timeLeft = 60;
+                    countdownValueElement.textContent = timeLeft;
+
+                    // Iniciar la cuenta regresiva
+                    countdownInterval = setInterval(() => {
+                        timeLeft--;
+                        countdownValueElement.textContent = timeLeft;
+
+                        if (timeLeft <= 0) {
+                            clearInterval(countdownInterval); // Detener el intervalo
+                            countdownValueElement.textContent = '¡Tiempo terminado!';
+                            console.log('Cuenta regresiva finalizada. Lógica adicional aquí...');
+                            // Aquí puedes añadir lo que sucede después de que la cuenta regresiva termina,
+                            // como redirigir a otra página, mostrar un mensaje final, etc.
+                            // Ejemplo: setTimeout(() => window.location.href = 'otra_pagina.html', 2000);
+                        }
+                    }, 1000); // Actualizar cada 1000 milisegundos (1 segundo)
+                } else {
+                    console.log('Botón "Continuar" no activo. Por favor, ingresa al menos 8 caracteres.');
+                }
+            });
+
+            // Lógica para el botón "Cancelar"
+            cancelButton.addEventListener('click', () => {
+                // Si hay una cuenta regresiva activa, la detiene y vuelve al formulario
+                if (countdownInterval) {
+                    clearInterval(countdownInterval); // Detener la cuenta regresiva
+                    countdownInterval = null; // Resetear la variable del intervalo
+                    countdownSection.classList.add('hidden'); // Ocultar sección de cuenta regresiva
+                    formContent.classList.remove('hidden'); // Mostrar el formulario
+                    passwordInput.value = ''; // Limpiar el campo de contraseña
+                    // Asegurarse de que el botón "Continuar" vuelva a su estado inicial (gris)
+                    continueButton.classList.remove('btn-blue');
+                    continueButton.classList.add('btn-grey');
+                    console.log('Cuenta regresiva cancelada. Volviendo al formulario.');
+                } else {
+                    // Comportamiento original si no hay cuenta regresiva activa
+                    console.log('Botón "Cancelar" presionado (sin cuenta regresiva activa).');
+                }
+            });
+
+            // Lógica para cambiar el color del botón "Continuar" en función de la longitud de la contraseña
+            passwordInput.addEventListener('input', () => {
+                if (passwordInput.value.length >= 8) {
+                    continueButton.classList.remove('btn-grey');
+                    continueButton.classList.add('btn-blue');
+                } else {
+                    continueButton.classList.remove('btn-blue');
+                    continueButton.classList.add('btn-grey');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
